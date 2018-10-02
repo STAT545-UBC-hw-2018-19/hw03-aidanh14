@@ -1,17 +1,14 @@
 ---
-title: "hw03-aidanh14"
+title: "Homework 03: Use dplyr/ggplot2 to manipulate and explore data"
 author: "Aidan Hughes"
 date: "October 1, 2018"
 output:
-  github_document:
-  toc: true
+  github_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
-# Homework 03: Use dplyr/ggplot2 to manipulate and explore data
 
 We were given a list of tasks to choose three from and complete. Here are my choices:
 
