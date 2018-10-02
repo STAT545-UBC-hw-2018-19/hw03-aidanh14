@@ -31,13 +31,43 @@ suppressPackageStartupMessages(library("tidyverse"))
 
 ## "How is life expectancy changing over time on different continents?"
 
-```{r lifeExp each year}
-gapminder %>%
-  select(year, continent, lifeExp) %>%
-  group_by(year) %>%
-  mutate(meanLifeExp = mean(lifeExp)) %>%
-  arrange(year)
+To see how life expectancy over time, let's find the mean life expectancy of each continent for each year we have data for.
 
+```{r lifeExp each year}
+lifeExpOverTime <- gapminder %>%
+  select(year, continent, lifeExp) %>%
+  group_by(continent, year) %>%
+  mutate(meanLifeExp = mean(lifeExp), sdLifeExp = sd(lifeExp)) %>%
+  select(year, continent, meanLifeExp, sdLifeExp)
+
+lifeExpOverTime
 ```
 
+A simple line plot of mean life expectancy vs. year will give us an idea of what's happening over time.
+
+```{r line plot}
+lifeExpPlot <- ggplot(lifeExpOverTime, aes(y = meanLifeExp, x = year, color=continent, group=continent)) +
+  ggtitle("Mean Life Expectancy Vs. Year") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+lifeExpPlot +
+  geom_line()
+```
+
+Plotting the mean only tells us part of the story. What about the standard devation of the life expectancy? We can try representing this as error bars.
+
+```{r line with error bars}
+lifeExpPlot +
+  geom_line() +
+  geom_errorbar(aes(ymin = meanLifeExp - sdLifeExp, ymax = meanLifeExp + sdLifeExp))
+```
+
+The plot is getting a little messy now. A ribbon plot can tell us the same information with less clutter.
+
+```{r ribbon plot}
+lifeExpPlot +
+  geom_ribbon(aes(ymin = meanLifeExp - sdLifeExp, ymax = meanLifeExp + sdLifeExp, fill=continent), alpha=0.2)
+```
+
+Now *that's* a clean plot that gives us all the information we need.
 
