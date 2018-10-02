@@ -2,7 +2,9 @@
 title: "hw03-aidanh14"
 author: "Aidan Hughes"
 date: "October 1, 2018"
-output: github_document
+output:
+  github_document:
+  toc: true
 ---
 
 ```{r setup, include=FALSE}
@@ -15,7 +17,7 @@ We were given a list of tasks to choose three from and complete. Here are my cho
 
 * *"How is life expectancy changing over time on different continents?"*
 
-* *"Task 2"*
+* *"Get the maximum and minimum of GDP per capita for all continents."*
 
 * *"Task 3"*
 
@@ -29,7 +31,7 @@ suppressPackageStartupMessages(library("tidyverse"))
 
 
 
-## "How is life expectancy changing over time on different continents?"
+## Task 1: "How is life expectancy changing over time on different continents?"
 
 To see how life expectancy over time, let's find the mean life expectancy of each continent for each year we have data for.
 
@@ -48,7 +50,7 @@ A simple line plot of mean life expectancy vs. year will give us an idea of what
 ```{r line plot}
 lifeExpPlot <- ggplot(lifeExpOverTime, aes(y = meanLifeExp, x = year, color=continent, group=continent)) +
   ggtitle("Mean Life Expectancy Vs. Year") +
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5)) #Center the title, left-aligned by default
 
 lifeExpPlot +
   geom_line()
@@ -59,15 +61,19 @@ Plotting the mean only tells us part of the story. What about the standard devat
 ```{r line with error bars}
 lifeExpPlot +
   geom_line() +
-  geom_errorbar(aes(ymin = meanLifeExp - sdLifeExp, ymax = meanLifeExp + sdLifeExp))
+  geom_errorbar(aes(ymin = meanLifeExp - sdLifeExp,
+                    ymax = meanLifeExp + sdLifeExp))
 ```
 
 The plot is getting a little messy now. A ribbon plot can tell us the same information with less clutter.
 
 ```{r ribbon plot}
 lifeExpPlot +
-  geom_ribbon(aes(ymin = meanLifeExp - sdLifeExp, ymax = meanLifeExp + sdLifeExp, fill=continent), alpha=0.2)
+  geom_ribbon(aes(ymin = meanLifeExp - sdLifeExp,
+                  ymax = meanLifeExp + sdLifeExp,
+                  fill=continent), alpha=0.2)
 ```
 
 Now *that's* a clean plot that gives us all the information we need.
 
+## Task 2: "Get the maximum and minimum of GDP per capita for all continents."

@@ -10,7 +10,7 @@ We were given a list of tasks to choose three from and complete. Here are my cho
 
 -   *"How is life expectancy changing over time on different continents?"*
 
--   *"Task 2"*
+-   *"Get the maximum and minimum of GDP per capita for all continents."*
 
 -   *"Task 3"*
 
@@ -21,8 +21,8 @@ suppressPackageStartupMessages(library("gapminder"))
 suppressPackageStartupMessages(library("tidyverse"))
 ```
 
-"How is life expectancy changing over time on different continents?"
---------------------------------------------------------------------
+Task 1: "How is life expectancy changing over time on different continents?"
+----------------------------------------------------------------------------
 
 To see how life expectancy over time, let's find the mean life expectancy of each continent for each year we have data for.
 
@@ -55,7 +55,9 @@ lifeExpOverTime
 A simple line plot of mean life expectancy vs. year will give us an idea of what's happening over time.
 
 ``` r
-lifeExpPlot <- ggplot(lifeExpOverTime, aes(y = meanLifeExp, x = year, color=continent, group=continent)) 
+lifeExpPlot <- ggplot(lifeExpOverTime, aes(y = meanLifeExp, x = year, color=continent, group=continent)) +
+  ggtitle("Mean Life Expectancy Vs. Year") +
+  theme(plot.title = element_text(hjust = 0.5)) #Center the title, left-aligned by default
 
 lifeExpPlot +
   geom_line()
@@ -68,7 +70,8 @@ Plotting the mean only tells us part of the story. What about the standard devat
 ``` r
 lifeExpPlot +
   geom_line() +
-  geom_errorbar(aes(ymin = meanLifeExp - sdLifeExp, ymax = meanLifeExp + sdLifeExp))
+  geom_errorbar(aes(ymin = meanLifeExp - sdLifeExp,
+                    ymax = meanLifeExp + sdLifeExp))
 ```
 
 ![](hw03-aidanh14_files/figure-markdown_github/line%20with%20error%20bars-1.png)
@@ -77,9 +80,14 @@ The plot is getting a little messy now. A ribbon plot can tell us the same infor
 
 ``` r
 lifeExpPlot +
-  geom_ribbon(aes(ymin = meanLifeExp - sdLifeExp, ymax = meanLifeExp + sdLifeExp, fill=continent), alpha=0.2)
+  geom_ribbon(aes(ymin = meanLifeExp - sdLifeExp,
+                  ymax = meanLifeExp + sdLifeExp,
+                  fill=continent), alpha=0.2)
 ```
 
 ![](hw03-aidanh14_files/figure-markdown_github/ribbon%20plot-1.png)
 
 Now *that's* a clean plot that gives us all the information we need.
+
+Task 2: "Get the maximum and minimum of GDP per capita for all continents."
+---------------------------------------------------------------------------
