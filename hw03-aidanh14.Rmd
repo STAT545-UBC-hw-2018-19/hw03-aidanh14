@@ -1,0 +1,43 @@
+---
+title: "hw03-aidanh14"
+author: "Aidan Hughes"
+date: "October 1, 2018"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Homework 03: Use dplyr/ggplot2 to manipulate and explore data
+
+We were given a list of tasks to choose three from and complete. Here are my choices:
+
+* *"How is life expectancy changing over time on different continents?"*
+
+* *"Task 2"*
+
+* *"Task 3"*
+
+
+Don't forget to include our packages:
+
+```{r packages}
+suppressPackageStartupMessages(library("gapminder"))
+suppressPackageStartupMessages(library("tidyverse"))
+```
+
+
+
+## "How is life expectancy changing over time on different continents?"
+
+```{r lifeExp each year}
+gapminder %>%
+  select(year, continent, lifeExp) %>%
+  group_by(year) %>%
+  mutate(meanLifeExp = mean(lifeExp)) %>%
+  arrange(year)
+
+```
+
+
