@@ -3,13 +3,18 @@ Homework 03: Use dplyr/ggplot2 to manipulate and explore data
 Aidan Hughes
 October 1, 2018
 
+------------------------------------------------------------------------
+
+Overview
+========
+
 We were given a list of tasks to choose three from and complete. Here are my choices:
 
 -   *"How is life expectancy changing over time on different continents?"*
 
 -   *"Get the maximum and minimum of GDP per capita for all continents."*
 
--   *"Task 3"*
+-   *"Report the absolute and/or relative abundance of countries with low life expectancy over time by continent."*
 
 Don't forget to include our packages:
 
@@ -18,8 +23,8 @@ suppressPackageStartupMessages(library("gapminder"))
 suppressPackageStartupMessages(library("tidyverse"))
 ```
 
-Task 1: "How is life expectancy changing over time on different continents?"
-----------------------------------------------------------------------------
+Task 1: *"How is life expectancy changing over time on different continents?"*
+==============================================================================
 
 To see how life expectancy over time, let's find the mean life expectancy of each continent for each year we have data for. We'll print a sample of the data in a table since printing all the data would be a little overwhelming.
 
@@ -82,8 +87,8 @@ lifeExpPlot +
 
 ![](hw03-aidanh14_files/figure-markdown_github/ribbon%20plot-1.png)
 
-Task 2: "Get the maximum and minimum of GDP per capita for all continents."
----------------------------------------------------------------------------
+Task 2: *"Get the maximum and minimum of GDP per capita for all continents."*
+=============================================================================
 
 Start by searching through all the data to find the minimum and maximum GDP per capita of each continent.
 
@@ -152,5 +157,54 @@ ggplot(countries, aes(x = continent, y = gdpPercap, fill = MinOrMax)) +
 
 ![](hw03-aidanh14_files/figure-markdown_github/bar%20plot-1.png)
 
-Task 3:
--------
+Task 3: *"Compute a trimmed mean of life expectancy for different years."*
+==========================================================================
+
+Let's calculate the trimmed mean using the `summarize` function, and see how the data changes depending on the trim value.
+
+``` r
+trims <- gapminder %>%
+  group_by(year) %>%
+  summarize(trim0.1 = mean(lifeExp, trim=0.1),
+            trim0.3 = mean(lifeExp, trim=0.3),
+            trim0.5 = mean(lifeExp, trim=0.5)) %>%
+  gather(key = "Trim", value = "Mean", contains("trim"))
+```
+
+We'll plot a sample of the data from each of the trimmed means.
+
+``` r
+trims %>%
+  filter(year < 1968) %>%
+knitr::kable()
+```
+
+|  year| Trim    |      Mean|
+|-----:|:--------|---------:|
+|  1952| trim0.1 |  48.57668|
+|  1957| trim0.1 |  51.26888|
+|  1962| trim0.1 |  53.58075|
+|  1967| trim0.1 |  55.86538|
+|  1952| trim0.3 |  46.83114|
+|  1957| trim0.3 |  49.85769|
+|  1962| trim0.3 |  52.40092|
+|  1967| trim0.3 |  55.15267|
+|  1952| trim0.5 |  45.13550|
+|  1957| trim0.5 |  48.36050|
+|  1962| trim0.5 |  50.88100|
+|  1967| trim0.5 |  53.82500|
+
+Let's use a counts plot to visualize the data.
+
+``` r
+trims %>%
+  ggplot(aes(x = Trim, y = Mean)) +
+  geom_count(col="blue", show.legend=FALSE, alpha=0.5) 
+```
+
+![](hw03-aidanh14_files/figure-markdown_github/counts%20plot-1.png)
+
+Not quite enough data points to make a great counts plot, but still shows what's happening when we trim the mean.
+
+That's all, thanks for your time! :smile:
+=========================================
