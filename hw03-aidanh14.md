@@ -30,6 +30,7 @@ lifeExpOverTime <- gapminder %>%
   mutate(meanLifeExp = mean(lifeExp), sdLifeExp = sd(lifeExp)) %>%
   select(year, continent, meanLifeExp, sdLifeExp)
 
+# Sample a single row for each of the continents
 lifeExpOverTime %>%
   ungroup() %>%
   distinct(continent, .keep_all = TRUE) %>%
@@ -47,10 +48,11 @@ lifeExpOverTime %>%
 A simple line plot of mean life expectancy vs. year will give us an idea of what's happening over time.
 
 ``` r
-lifeExpPlot <- ggplot(lifeExpOverTime,
-                      aes(y = meanLifeExp, x = year, color = continent, group = continent)) +
+lifeExpPlot <- ggplot(lifeExpOverTime, aes(y = meanLifeExp, x = year, color = continent, group = continent)) +
   ggtitle("Life Expectancy Vs. Year") +
-  theme(plot.title = element_text(hjust = 0.5)) #Center the title, left-aligned by default
+  
+  #Center the title, left-aligned by default
+  theme(plot.title = element_text(hjust = 0.5))
 
 lifeExpPlot +
   geom_line()
@@ -133,8 +135,22 @@ We can plot the max and min GDP per capita of each continent conveniently in a b
 
 ``` r
 ggplot(countries, aes(x = continent, y = gdpPercap, fill = MinOrMax)) +
-  geom_col(position="dodge") +
-  labs(y = "GDP Per Capita", x = "Continent", fill = "Min. GDP or Max. GDP")
+  geom_col(position = "dodge") +
+  
+  # Labelling
+  geom_text(aes(label = country, vjust = -0.5), size = 2, fontface="bold") +
+  labs(y = "GDP Per Capita", x = "Continent", fill = "min. or max. \n GDP") +
+  
+  # ggplot automatically adds a legend for size and alpha, need to remove them
+  guides(size=FALSE, alpha=FALSE) +
+  
+  ggtitle("Maximum and Minimum \nGDP Per Capita") +
+  
+  # Center the title, left-aligned by default
+  theme(plot.title = element_text(hjust = 0.5))
 ```
 
 ![](hw03-aidanh14_files/figure-markdown_github/bar%20plot-1.png)
+
+Task 3:
+-------
