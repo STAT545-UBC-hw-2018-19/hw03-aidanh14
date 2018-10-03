@@ -159,3 +159,9 @@ trims %>%
 Not quite enough data points to make a great counts plot, but still shows what's happening when we trim the mean.
 
 # That's all, thanks for your time! :smile:
+
+Here's some links I found useful for this assignment:
+
+* http://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html
+* https://ggplot2.tidyverse.org/reference/
+* Lots of [StackOverflow](https://stackoverflow.com/) questions 
