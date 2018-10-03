@@ -21,7 +21,7 @@ suppressPackageStartupMessages(library("tidyverse"))
 Task 1: "How is life expectancy changing over time on different continents?"
 ----------------------------------------------------------------------------
 
-To see how life expectancy over time, let's find the mean life expectancy of each continent for each year we have data for.
+To see how life expectancy over time, let's find the mean life expectancy of each continent for each year we have data for. We'll print a sample of the data in a table since printing all the data would be a little overwhelming.
 
 ``` r
 lifeExpOverTime <- gapminder %>%
@@ -30,30 +30,26 @@ lifeExpOverTime <- gapminder %>%
   mutate(meanLifeExp = mean(lifeExp), sdLifeExp = sd(lifeExp)) %>%
   select(year, continent, meanLifeExp, sdLifeExp)
 
-lifeExpOverTime
+lifeExpOverTime %>%
+  ungroup() %>%
+  distinct(continent, .keep_all = TRUE) %>%
+  knitr::kable()
 ```
 
-    ## # A tibble: 1,704 x 4
-    ## # Groups:   continent, year [60]
-    ##     year continent meanLifeExp sdLifeExp
-    ##    <int> <fct>           <dbl>     <dbl>
-    ##  1  1952 Asia             46.3      9.29
-    ##  2  1957 Asia             49.3      9.64
-    ##  3  1962 Asia             51.6      9.82
-    ##  4  1967 Asia             54.7      9.65
-    ##  5  1972 Asia             57.3      9.72
-    ##  6  1977 Asia             59.6     10.0 
-    ##  7  1982 Asia             62.6      8.54
-    ##  8  1987 Asia             64.9      8.20
-    ##  9  1992 Asia             66.5      8.08
-    ## 10  1997 Asia             68.0      8.09
-    ## # ... with 1,694 more rows
+|  year| continent |  meanLifeExp|  sdLifeExp|
+|-----:|:----------|------------:|----------:|
+|  1952| Asia      |     46.31439|  9.2917507|
+|  1952| Europe    |     64.40850|  6.3610883|
+|  1952| Africa    |     39.13550|  5.1515814|
+|  1952| Americas  |     53.27984|  9.3260819|
+|  1952| Oceania   |     69.25500|  0.1909188|
 
 A simple line plot of mean life expectancy vs. year will give us an idea of what's happening over time.
 
 ``` r
-lifeExpPlot <- ggplot(lifeExpOverTime, aes(y = meanLifeExp, x = year, color=continent, group=continent)) +
-  ggtitle("Mean Life Expectancy Vs. Year") +
+lifeExpPlot <- ggplot(lifeExpOverTime,
+                      aes(y = meanLifeExp, x = year, color = continent, group = continent)) +
+  ggtitle("Life Expectancy Vs. Year") +
   theme(plot.title = element_text(hjust = 0.5)) #Center the title, left-aligned by default
 
 lifeExpPlot +
@@ -84,7 +80,61 @@ lifeExpPlot +
 
 ![](hw03-aidanh14_files/figure-markdown_github/ribbon%20plot-1.png)
 
-Now *that's* a clean plot that gives us all the information we need.
-
 Task 2: "Get the maximum and minimum of GDP per capita for all continents."
 ---------------------------------------------------------------------------
+
+Start by searching through all the data to find the minimum and maximum GDP per capita of each continent.
+
+``` r
+gdpPerCapMaxMin <- gapminder %>%
+  select(continent, gdpPercap) %>%
+  group_by(continent) %>%
+  mutate(mingdpPerCap = min(gdpPercap), maxgdpPerCap = max(gdpPercap)) %>%
+  distinct(continent, mingdpPerCap, maxgdpPerCap)
+
+knitr::kable(gdpPerCapMaxMin)
+```
+
+| continent |  mingdpPerCap|  maxgdpPerCap|
+|:----------|-------------:|-------------:|
+| Asia      |      331.0000|     113523.13|
+| Europe    |      973.5332|      49357.19|
+| Africa    |      241.1659|      21951.21|
+| Americas  |     1201.6372|      42951.65|
+| Oceania   |    10039.5956|      34435.37|
+
+We can go further and find which country in each continent had the minimum and maximum GDP per capita, along with which year.
+
+``` r
+countries <- gapminder %>%
+  select(country, year, continent, gdpPercap) %>%
+  filter(gdpPercap %in% gdpPerCapMaxMin$mingdpPerCap |
+         gdpPercap %in% gdpPerCapMaxMin$maxgdpPerCap) %>%
+  mutate(MinOrMax = ifelse(gdpPercap %in% gdpPerCapMaxMin$mingdpPerCap, "min", "max")) %>%
+  arrange(continent, desc(MinOrMax))
+
+knitr::kable(countries)
+```
+
+| country                |  year| continent |    gdpPercap| MinOrMax |
+|:-----------------------|-----:|:----------|------------:|:---------|
+| Congo, Dem. Rep.       |  2002| Africa    |     241.1659| min      |
+| Libya                  |  1977| Africa    |   21951.2118| max      |
+| Haiti                  |  2007| Americas  |    1201.6372| min      |
+| United States          |  2007| Americas  |   42951.6531| max      |
+| Myanmar                |  1952| Asia      |     331.0000| min      |
+| Kuwait                 |  1957| Asia      |  113523.1329| max      |
+| Bosnia and Herzegovina |  1952| Europe    |     973.5332| min      |
+| Norway                 |  2007| Europe    |   49357.1902| max      |
+| Australia              |  1952| Oceania   |   10039.5956| min      |
+| Australia              |  2007| Oceania   |   34435.3674| max      |
+
+We can plot the max and min GDP per capita of each continent conveniently in a bar graph.
+
+``` r
+ggplot(countries, aes(x = continent, y = gdpPercap, fill = MinOrMax)) +
+  geom_col(position="dodge") +
+  labs(y = "GDP Per Capita", x = "Continent", fill = "Min. GDP or Max. GDP")
+```
+
+![](hw03-aidanh14_files/figure-markdown_github/bar%20plot-1.png)

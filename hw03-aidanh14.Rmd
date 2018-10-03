@@ -30,7 +30,7 @@ suppressPackageStartupMessages(library("tidyverse"))
 
 ## Task 1: "How is life expectancy changing over time on different continents?"
 
-To see how life expectancy over time, let's find the mean life expectancy of each continent for each year we have data for.
+To see how life expectancy over time, let's find the mean life expectancy of each continent for each year we have data for. We'll print a sample of the data in a table since printing all the data would be a little overwhelming.
 
 ```{r lifeExp each year}
 lifeExpOverTime <- gapminder %>%
@@ -39,14 +39,18 @@ lifeExpOverTime <- gapminder %>%
   mutate(meanLifeExp = mean(lifeExp), sdLifeExp = sd(lifeExp)) %>%
   select(year, continent, meanLifeExp, sdLifeExp)
 
-lifeExpOverTime
+lifeExpOverTime %>%
+  ungroup() %>%
+  distinct(continent, .keep_all = TRUE) %>%
+  knitr::kable()
 ```
 
 A simple line plot of mean life expectancy vs. year will give us an idea of what's happening over time.
 
 ```{r line plot}
-lifeExpPlot <- ggplot(lifeExpOverTime, aes(y = meanLifeExp, x = year, color=continent, group=continent)) +
-  ggtitle("Mean Life Expectancy Vs. Year") +
+lifeExpPlot <- ggplot(lifeExpOverTime,
+                      aes(y = meanLifeExp, x = year, color = continent, group = continent)) +
+  ggtitle("Life Expectancy Vs. Year") +
   theme(plot.title = element_text(hjust = 0.5)) #Center the title, left-aligned by default
 
 lifeExpPlot +
@@ -71,6 +75,40 @@ lifeExpPlot +
                   fill=continent), alpha=0.2)
 ```
 
-Now *that's* a clean plot that gives us all the information we need.
+
 
 ## Task 2: "Get the maximum and minimum of GDP per capita for all continents."
+
+Start by searching through all the data to find the minimum and maximum GDP per capita of each continent.
+
+```{r GDP per cap min max}
+gdpPerCapMaxMin <- gapminder %>%
+  select(continent, gdpPercap) %>%
+  group_by(continent) %>%
+  mutate(mingdpPerCap = min(gdpPercap), maxgdpPerCap = max(gdpPercap)) %>%
+  distinct(continent, mingdpPerCap, maxgdpPerCap)
+
+knitr::kable(gdpPerCapMaxMin)
+```
+
+We can go further and find which country in each continent had the minimum and maximum GDP per capita, along with which year.
+
+```{r MaxMin GDP countries}
+countries <- gapminder %>%
+  select(country, year, continent, gdpPercap) %>%
+  filter(gdpPercap %in% gdpPerCapMaxMin$mingdpPerCap |
+         gdpPercap %in% gdpPerCapMaxMin$maxgdpPerCap) %>%
+  mutate(MinOrMax = ifelse(gdpPercap %in% gdpPerCapMaxMin$mingdpPerCap, "min", "max")) %>%
+  arrange(continent, desc(MinOrMax))
+
+knitr::kable(countries)
+```
+
+We can plot the max and min GDP per capita of each continent conveniently in a bar graph.
+
+```{r bar plot}
+ggplot(countries, aes(x = continent, y = gdpPercap, fill = MinOrMax)) +
+  geom_col(position="dodge") +
+  labs(y = "GDP Per Capita", x = "Continent", fill = "Min. GDP or Max. GDP")
+```
+
