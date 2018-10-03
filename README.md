@@ -4,7 +4,7 @@
 
 **Welcome to my homework 3 repository!**
 
-You can find the RMarkdown file **here (link)**, and the Markdown file **here (also link)**.
+The main .rmd file is [hw03-aidanh14.Rmd](https://github.com/STAT545-UBC-students/hw03-aidanh14/blob/master/hw03-aidanh14.Rmd), and the output .md file is [hw03-aidanh14.md](https://github.com/STAT545-UBC-students/hw03-aidanh14/blob/master/hw03-aidanh14.md). 
 
 
 
